@@ -1,0 +1,21 @@
+# audio files
+*.wav
+*.mp3
+*.mid
+*.mp4
+*.flac
+*.aiff
+
+# python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# dev artefacts
+peaks/
+*.log
