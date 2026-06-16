@@ -171,11 +171,3 @@ python laminar_stretch.py voice.wav out.wav \
     --lfo grain_ms:random_walk:0.07:0.25 \
     --midi out.mid --midi-bpm 120
 ```
-
----
-
-## github topics
-
-suggested topics to add via repository settings:
-
-`granular-synthesis` `time-stretching` `audio-processing` `ambient-music` `drone` `python` `dsp` `paulstretch` `sound-design` `midi` `wav` `overlap-add`
