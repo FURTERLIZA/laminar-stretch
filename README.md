@@ -2,7 +2,9 @@
 
 granular time-stretching for ambient and drone production, written in Python. processes `.wav` files at extreme stretch ratios (200%–800%+).
 
-takes a source audio file and slows it down by an order of magnitude without pitch-shifting. unlike single-pass granular stretching (paulstretch-style), it runs several independent stretch passes in parallel — each with a different grain size, pitch offset, and rate — and mixes the results. the layers evolve at slightly different speeds and beat against each other, producing movement rather than a static smear. optional post-processing covers reverb, compression, tone correction, LFO modulation, chord harmonisation, and pitch analysis with MIDI export.
+takes a source audio file and slows it down by an order of magnitude without pitch-shifting. unlike single-pass granular stretching (paulstretch-style), it runs several independent stretch passes in parallel, each with different grain sizes and subtle harmonic offsets. the results are folded together to create complex, evolving textures.
+
+**[watch a video example →](https://youtube.com/shorts/IwLQZZc8cWY?feature=share)**
 
 ## features
 
@@ -23,11 +25,11 @@ two ideas drive the design:
 
 **pizza dough:** stretch in several separate pulls rather than one long yank. a single extreme stretch tears the material; repeated gentler passes produce something coherent and evolving.
 
-**pastry lamination:** process multiple independent layers and fold them together. each layer has its own grain size, stretch modifier, and subtle pitch offset. because they evolve at slightly different rates they beat against each other, producing natural movement rather than static repetition.
+**pastry lamination:** process multiple independent layers and fold them together. each layer has its own grain size, stretch modifier, and subtle pitch offset. because they evolve at slightly different rates, interference and beating emerge naturally.
 
 yes. i was hungry when i thought of this.
 
-the core technique is overlap-add granular synthesis. the source file is scanned slowly (`hop_in << hop_out`) and windowed segments are placed into the output. each output grain is a Hann-weighted average of several nearby source grains, placed at a scattered position. post-processing stages (reverb, compression, tone correction) are applied to the mixed output in that order.
+the core technique is overlap-add granular synthesis. the source file is scanned slowly (`hop_in << hop_out`) and windowed segments are placed into the output. each output grain is a Hann-weighted copy of a source frame. by repeating the same frame N times (with different phase randomisation each time), we create temporal density without pitch shift.
 
 see [algorithm.md](algorithm.md) for a step-by-step breakdown.
 
