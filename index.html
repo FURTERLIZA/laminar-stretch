@@ -1,0 +1,1953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laminar Stretch</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 67.703 42.194'%3E%3Cpath d='m67.69 12.05-14.76-12.05-37.95 0.08-14.98 11.9 33.46 30.2zm-32.7 11.44 1.37 8.87-2.2 5.98-0.36 0.39-2.44-6.84 1.44-8.36zm-11.55-0.01 1.03-0.07 1.27 0.1 1.82 4.21-0.09 0.12-3.45-3.55zm25.24 0.01-4.66 7.72-8.07 7.18 2.13-5.72 8.92-9.28zm-4.23 0-4.29 4.51 1.83-4.29 0.34-0.34zm-4.25 0-2.47 5.69-1.05-5.69 0.1-0.1zm-12.54-0.01 3.23-0.12 0.17 0.17-0.97 5.68-2.45-5.5zm-8.48 0 1.64-0.12 8.97 9.51 1.95 5.5-7.94-7.14zm25.64-10.53-0.83 2.08-8.62 0.14-0.33-1.46v-0.78l6.82-0.12zm19.8-0.15-16.06 14.25 2.15-3.56 1.71-0.13 1.13-1.09 0.41-4.09 3.22-5.27zm-18.73 2.21 0.89-2.21h7.86l-2.15 2.25-4.62 0.08zm-13.02-2.1-0.37 2.12-8.58 0.1-1.02-2.18 9.85-0.15zm-19.79-0.11 7.96 0.11 0.95 2.15-6.67 0.11zm-9.86 0 7.44 0.11 3.35 5.52 0.12 3.64 1.29 1.29 1.59 0.03 2.4 3.91zm41.97-5.47 0.12-0.14 7.63 3.86-6.06 0.02zm-22.64 0.02-1.58 3.72-6.04-0.02 0.02-0.1 7.44-3.76zm22.29 3.45-0.04 0.27-8.12-0.02 5.82-4.13 0.58-0.22zm-21.96 0.2 1.61-3.81 0.48-0.49 5.58 3.9 0.46 0.45zm34.5-5.28 6.97 5.33-6.75 0.02-0.27-3.83zm-46.95 0-0.12 4.22-0.29 1.13-6.41-0.02 1.1-0.98zm35.15-0.56 6.74-3.21 0.25 0.06 2.86 2.27 0.37 6.1-10.2-5.01zm-4.2 0.14-0.2 0.52-7.31 5.05-7.53-5.37 7.16-3.57 0.77 0.02zm-18.99 0.03-10.05 5.05h-0.32l0.37-6.18 2.98-2.27 1.59 0.63zm15.47-3.6h10.73l-5.07 2.55-0.58-0.08zm-18.75 0h10.75l-4.89 2.38-0.72 0.16z' fill='%23999' fill-rule='evenodd' opacity='.55'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --color-bg: #2C404E;
+    --color-text: #D8D8D8;
+    --color-text-muted: #A5A5A5;
+    --color-border: rgba(165, 165, 165, 0.2);
+    --color-border-strong: rgba(165, 165, 165, 0.45);
+    --color-field-bg: rgba(0, 0, 0, 0.18);
+    --color-accent: #4E7387;
+    --color-action-bg: #C3AB99;
+    --color-action-text: #1A1A1A;
+  }
+
+  [data-theme="light"] {
+    --color-bg: #F6EADF;
+    --color-text: #1A1A1A;
+    --color-text-muted: #4E7387;
+    --color-border: rgba(26, 26, 26, 0.15);
+    --color-border-strong: rgba(26, 26, 26, 0.35);
+    --color-field-bg: rgba(0, 0, 0, 0.05);
+    --color-accent: #2C404E;
+    --color-action-bg: #2C404E;
+    --color-action-text: #F6EADF;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', -apple-system, 'Helvetica Neue', sans-serif;
+    background: var(--color-bg);
+    color: var(--color-text);
+    min-height: 100vh;
+    padding: 2rem 1rem 3rem;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  /* ── Page header (full-width, above two-column layout) ── */
+  .page-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    max-width: 1160px;
+    margin: 0 auto 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .head-brand {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .logo {
+    height: 48px;
+    width: auto;
+    flex-shrink: 0;
+    display: block;
+  }
+
+  .head-text h1 {
+    font-size: 1.1rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-text);
+    line-height: 1.2;
+  }
+
+  .head-text .subtitle {
+    font-size: 0.72rem;
+    color: var(--color-text-muted);
+    margin-top: 0.2rem;
+  }
+
+  .theme-btn {
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .theme-btn:hover { color: var(--color-text); }
+
+  /* ── Two-column layout ── */
+  .layout {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+    max-width: 1160px;
+    margin: 0 auto;
+  }
+
+  .main-col { flex: 1; min-width: 0; }
+
+  .outputs-col {
+    width: 340px;
+    flex-shrink: 0;
+  }
+
+  .outputs-panel {
+    position: sticky;
+    top: 2rem;
+    max-height: calc(100vh - 4rem);
+    display: flex;
+    flex-direction: column;
+    padding-top: calc(1.25rem + 5px);
+  }
+
+  .about {
+    margin-top: 2rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .about p {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  .about-links {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .about-links a {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--color-accent);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-accent);
+    padding-bottom: 0.1rem;
+  }
+  .about-links a:hover { opacity: 0.7; }
+
+  .privacy-btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--color-text-muted);
+    background: none;
+    border: none;
+    border-bottom: 1px solid var(--color-border-strong);
+    padding: 0 0 0.1rem;
+    cursor: pointer;
+  }
+  .privacy-btn:hover { color: var(--color-text); border-color: var(--color-text); }
+
+  .privacy-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .privacy-overlay.open { display: flex; }
+
+  .privacy-modal {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border-strong);
+    border-radius: 6px;
+    max-width: 540px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 2rem;
+    position: relative;
+  }
+  .privacy-modal h2 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text);
+    margin: 0 0 1.25rem;
+  }
+  .privacy-modal p, .privacy-modal li {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    line-height: 1.7;
+    margin-bottom: 0.75rem;
+  }
+  .privacy-modal ul { padding-left: 1.25rem; margin-bottom: 0.75rem; }
+  .privacy-modal li { margin-bottom: 0.25rem; }
+  .privacy-modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    font-size: 1.1rem;
+    cursor: pointer;
+    line-height: 1;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .privacy-modal-close:hover { color: var(--color-text); }
+
+  @media (max-width: 960px) {
+    .layout { flex-direction: column; }
+    .main-col { max-width: 100%; }
+    .outputs-col { width: 100%; }
+    .outputs-panel { position: static; max-height: none; }
+    .page-head { flex-wrap: wrap; gap: 1rem; }
+  }
+
+  /* ── Sections ── */
+  .section {
+    border-top: 1px solid var(--color-border);
+    padding: 1.25rem 0;
+  }
+  .main-col .section:first-child { border-top: none; }
+
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin-bottom: 1rem;
+  }
+
+  /* ── Drop zone ── */
+  .drop-zone {
+    border: 1px solid var(--color-border-strong);
+    border-radius: 2px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .drop-zone:hover, .drop-zone.drag-over { border-color: var(--color-accent); }
+  .drop-zone p { font-size: 0.82rem; color: var(--color-text-muted); }
+  .drop-zone p span { color: var(--color-accent); text-decoration: underline; cursor: pointer; }
+
+  #fileInput { display: none; }
+
+  .file-info {
+    display: none;
+    padding: 0.55rem 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--color-text-muted);
+    margin-top: 0.75rem;
+    border-top: 1px solid var(--color-border);
+  }
+  .file-info.visible { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .file-info span { color: var(--color-text); }
+
+  audio {
+    accent-color: var(--color-accent);
+    color-scheme: dark;
+    border-radius: 2px;
+  }
+  [data-theme="light"] audio { color-scheme: light; }
+
+  /* ── Grid / fields ── */
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 1.5rem; }
+  @media (max-width: 500px) { .grid { grid-template-columns: 1fr; } }
+
+  .field { display: flex; flex-direction: column; gap: 0.4rem; }
+
+  .field label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--color-text-muted);
+    letter-spacing: 0.02em;
+  }
+
+  /* Sliders */
+  .field input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 2px;
+    background: var(--color-border-strong);
+    border-radius: 1px;
+    outline: none;
+    cursor: pointer;
+  }
+  .field input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 11px; height: 11px;
+    background: var(--color-accent);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  .field input[type=range]::-moz-range-thumb {
+    width: 11px; height: 11px;
+    background: var(--color-accent);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+  }
+
+  /* Number inputs */
+  .field input[type=number] {
+    background: var(--color-field-bg);
+    border: 1px solid var(--color-border-strong);
+    border-radius: 2px;
+    color: var(--color-text);
+    padding: 0.3rem 0.5rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    width: 100%;
+    outline: none;
+  }
+  .field input[type=number]:focus { border-color: var(--color-accent); }
+  .field input[type=number]::placeholder { color: var(--color-text-muted); opacity: 0.7; }
+
+  /* Selects */
+  .select-wrap { position: relative; }
+  .select-wrap::after {
+    content: '▾';
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    font-size: 0.6rem;
+    color: var(--color-text-muted);
+  }
+  .field select {
+    -webkit-appearance: none;
+    appearance: none;
+    background: var(--color-field-bg);
+    border: 1px solid var(--color-border-strong);
+    border-radius: 2px;
+    color: var(--color-text);
+    padding: 0.3rem 1.5rem 0.3rem 0.5rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    width: 100%;
+    outline: none;
+    cursor: pointer;
+  }
+  .field select:focus { border-color: var(--color-accent); }
+  .field select option { background: #2C404E; color: #D8D8D8; }
+  [data-theme="light"] .field select option { background: #F6EADF; color: #1A1A1A; }
+
+  .range-row { display: flex; align-items: center; gap: 0.75rem; }
+  .range-row input[type=range] { flex: 1; }
+  .range-row input[type=number] { width: 64px; flex-shrink: 0; }
+
+  /* ── Segmented control (layers) ── */
+  .seg-row {
+    display: flex;
+    background: var(--color-field-bg);
+    border: 1px solid var(--color-border-strong);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .seg-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    border-right: 1px solid var(--color-border-strong);
+    color: var(--color-text-muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    padding: 0.3rem 0;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.1s, color 0.1s;
+  }
+  .seg-btn:last-child { border-right: none; }
+  .seg-btn.active {
+    background: var(--color-accent);
+    color: var(--color-bg);
+  }
+  .seg-btn:hover:not(.active) { color: var(--color-text); }
+
+  /* ── Toggles (flat angular switch) ── */
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .toggle {
+    position: relative;
+    display: inline-block;
+    width: 30px; height: 16px;
+    flex-shrink: 0;
+  }
+  .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+  .toggle-slider {
+    position: absolute; inset: 0;
+    background: transparent;
+    border: 1px solid var(--color-border-strong);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .toggle-slider::before {
+    content: '';
+    position: absolute;
+    width: 10px; height: 10px;
+    left: 2px; top: 2px;
+    background: var(--color-text-muted);
+    border-radius: 1px;
+    transition: transform 0.15s, background 0.15s;
+  }
+  .toggle input:checked + .toggle-slider { border-color: var(--color-accent); }
+  .toggle input:checked + .toggle-slider::before {
+    transform: translateX(14px);
+    background: var(--color-accent);
+  }
+
+  .toggle-label {
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    user-select: none;
+  }
+  .toggle-label:hover { color: var(--color-text); }
+
+  .sub-fields {
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--color-border);
+    margin-top: 0.25rem;
+  }
+  .sub-fields.hidden { display: none; }
+
+  /* ── Chord subsection ── */
+  .subsection {
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .subsection-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin-bottom: 0.75rem;
+  }
+
+  /* ── LFO rows ── */
+  .lfo-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 80px 68px 32px;
+    gap: 0.5rem;
+    align-items: end;
+    margin-bottom: 0.6rem;
+  }
+  .lfo-row:last-child { margin-bottom: 0; }
+
+  .lfo-remove {
+    height: 32px;
+    background: none;
+    border: 1px solid var(--color-border-strong);
+    border-radius: 4px;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+  }
+  .lfo-remove:hover { border-color: #c0392b; color: #c0392b; }
+
+  .add-lfo-btn {
+    margin-top: 0.6rem;
+    padding: 0.35rem 0.75rem;
+    background: none;
+    border: 1px dashed var(--color-border-strong);
+    border-radius: 4px;
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    cursor: pointer;
+  }
+  .add-lfo-btn:hover { border-color: var(--color-accent); color: var(--color-accent); }
+  .add-lfo-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  /* ── Process button ── */
+  .process-btn {
+    width: 100%;
+    padding: 0.8rem;
+    background: var(--color-action-bg);
+    color: var(--color-action-text);
+    border: none;
+    border-radius: 2px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .process-btn:hover:not(:disabled) { opacity: 0.85; }
+  .process-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  /* ── Progress ── */
+  .progress-wrap { display: none; margin-top: 0.75rem; }
+  .progress-wrap.visible { display: block; }
+
+  .progress-bar-bg {
+    background: var(--color-border);
+    height: 2px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--color-accent);
+    width: 0%;
+    transition: width 0.3s;
+  }
+  .progress-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--color-text-muted);
+  }
+
+  /* ── Error ── */
+  .error {
+    display: none;
+    padding: 0.6rem 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: #c05050;
+    border-top: 1px solid rgba(180, 60, 60, 0.3);
+    margin-top: 0.75rem;
+  }
+  .error.visible { display: block; }
+
+  /* ── Outputs panel ── */
+  .panel-header {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin-bottom: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .panel-scroll { overflow-y: auto; flex: 1; }
+
+  .no-outputs {
+    color: var(--color-text-muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    text-align: center;
+    padding: 2rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 2px;
+  }
+
+  .output-entry {
+    border-top: 1px solid var(--color-border);
+    padding: 0.75rem 0;
+  }
+
+  .output-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .output-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--color-text-muted);
+    flex-shrink: 0;
+  }
+
+  .output-params {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--color-text-muted);
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .output-delete {
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    font-size: 0.9rem;
+    line-height: 1;
+    padding: 0;
+    flex-shrink: 0;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .output-delete:hover { color: var(--color-text); }
+
+  .output-footer {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.4rem;
+  }
+
+  .output-dl {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--color-accent);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-accent);
+    padding-bottom: 0.1rem;
+    white-space: nowrap;
+  }
+  .output-dl:hover { opacity: 0.7; }
+
+  .output-meta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--color-text-muted);
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── Full-width header ────────────────────────────────────────────────────── -->
+<header class="page-head">
+  <div class="head-brand">
+    <svg class="logo" version="1.1" viewBox="0 0 67.703 42.194" xmlns="http://www.w3.org/2000/svg" aria-label="Fürter Liza">
+      <path d="m67.69 12.05-14.76-12.05-37.95 0.08-14.98 11.9 33.46 30.2zm-32.7 11.44 1.37 8.87-2.2 5.98-0.36 0.39-2.44-6.84 1.44-8.36zm-11.55-0.01 1.03-0.07 1.27 0.1 1.82 4.21-0.09 0.12-3.45-3.55zm25.24 0.01-4.66 7.72-8.07 7.18 2.13-5.72 8.92-9.28zm-4.23 0-4.29 4.51 1.83-4.29 0.34-0.34zm-4.25 0-2.47 5.69-1.05-5.69 0.1-0.1zm-12.54-0.01 3.23-0.12 0.17 0.17-0.97 5.68-2.45-5.5zm-8.48 0 1.64-0.12 8.97 9.51 1.95 5.5-7.94-7.14zm25.64-10.53-0.83 2.08-8.62 0.14-0.33-1.46v-0.78l6.82-0.12zm19.8-0.15-16.06 14.25 2.15-3.56 1.71-0.13 1.13-1.09 0.41-4.09 3.22-5.27zm-18.73 2.21 0.89-2.21h7.86l-2.15 2.25-4.62 0.08zm-13.02-2.1-0.37 2.12-8.58 0.1-1.02-2.18 9.85-0.15zm-19.79-0.11 7.96 0.11 0.95 2.15-6.67 0.11zm-9.86 0 7.44 0.11 3.35 5.52 0.12 3.64 1.29 1.29 1.59 0.03 2.4 3.91zm41.97-5.47 0.12-0.14 7.63 3.86-6.06 0.02zm-22.64 0.02-1.58 3.72-6.04-0.02 0.02-0.1 7.44-3.76zm22.29 3.45-0.04 0.27-8.12-0.02 5.82-4.13 0.58-0.22zm-21.96 0.2 1.61-3.81 0.48-0.49 5.58 3.9 0.46 0.45zm34.5-5.28 6.97 5.33-6.75 0.02-0.27-3.83zm-46.95 0-0.12 4.22-0.29 1.13-6.41-0.02 1.1-0.98zm35.15-0.56 6.74-3.21 0.25 0.06 2.86 2.27 0.37 6.1-10.2-5.01zm-4.2 0.14-0.2 0.52-7.31 5.05-7.53-5.37 7.16-3.57 0.77 0.02zm-18.99 0.03-10.05 5.05h-0.32l0.37-6.18 2.98-2.27 1.59 0.63zm15.47-3.6h10.73l-5.07 2.55-0.58-0.08zm-18.75 0h10.75l-4.89 2.38-0.72 0.16z" fill="#999" fill-rule="evenodd" opacity=".55"/>
+      <path d="m16.304 21.368h-0.74051v-3.5485h2.0327v0.61626h-1.2922v0.91445h1.2027v0.61626h-1.2027zm5.4718-1.2524q0 0.36777-0.164 0.66596-0.15904 0.29322-0.48705 0.46717-0.32304 0.16898-0.82003 0.16898-0.70572 0-1.0735-0.35783-0.36777-0.3628-0.36777-0.95421v-2.2861h0.75045v2.1718q0 0.43735 0.17892 0.61626t0.53178 0.17892q0.36777 0 0.53178-0.19382 0.16898-0.19382 0.16898-0.60632v-2.1669h0.75045zm-2.2911-2.9919q0-0.17394 0.0994-0.24849 0.0994-0.07952 0.23855-0.07952 0.13916 0 0.23855 0.07952 0.10437 0.07455 0.10437 0.24849 0 0.164-0.10437 0.24352-0.0994 0.07952-0.23855 0.07952-0.13916 0-0.23855-0.07952-0.0994-0.07952-0.0994-0.24352zm0.97906 0q0-0.17394 0.0994-0.24849 0.0994-0.07952 0.24352-0.07952 0.13916 0 0.23855 0.07952 0.10437 0.07455 0.10437 0.24849 0 0.164-0.10437 0.24352-0.0994 0.07952-0.23855 0.07952-0.14413 0-0.24352-0.07952-0.0994-0.07952-0.0994-0.24352zm3.8119 0.69578q0.7256 0 1.0685 0.2634 0.34789 0.2634 0.34789 0.80015 0 0.24352-0.09443 0.42741-0.08946 0.17892-0.24352 0.30813-0.1491 0.12425-0.32304 0.20376l1.0437 1.5456h-0.83494l-0.84488-1.3617h-0.40256v1.3617h-0.75045v-3.5485zm-0.05467 0.61626h-0.22861v0.95918h0.24352q0.37274 0 0.53178-0.12425 0.164-0.12425 0.164-0.36777 0-0.25346-0.17394-0.35783-0.16898-0.10934-0.53674-0.10934zm4.2641 2.9322h-0.75045v-2.9223h-0.96415v-0.6262h2.6788v0.6262h-0.96415zm4.1498 0h-2.0426v-3.5485h2.0426v0.61626h-1.2922v0.78027h1.2027v0.61626h-1.2027v0.91445h1.2922zm2.3706-3.5485q0.7256 0 1.0685 0.2634 0.34789 0.2634 0.34789 0.80015 0 0.24352-0.09443 0.42741-0.08946 0.17892-0.24352 0.30813-0.1491 0.12425-0.32304 0.20376l1.0437 1.5456h-0.83494l-0.84488-1.3617h-0.40256v1.3617h-0.75045v-3.5485zm-0.05467 0.61626h-0.22861v0.95918h0.24353q0.37274 0 0.53178-0.12425 0.164-0.12425 0.164-0.36777 0-0.25346-0.17394-0.35783-0.16898-0.10934-0.53674-0.10934zm4.786 2.9322v-3.5485h0.75045v2.9272h1.4413v0.62123zm4.7313 0h-1.6152v-0.42741l0.43238-0.19879v-2.2961l-0.43238-0.1988v-0.42741h1.6152v0.42741l-0.43238 0.1988v2.2961l0.43238 0.19879zm3.5137 0h-2.639v-0.48705l1.6997-2.4402h-1.655v-0.62123h2.5495v0.48705l-1.6997 2.4402h1.7444zm3.3348 0-0.25843-0.84488h-1.2922l-0.25843 0.84488h-0.81009l1.2524-3.5634h0.91942l1.2574 3.5634zm-0.69578-2.301q-0.02485-0.08449-0.06461-0.2137-0.03976-0.12922-0.07952-0.2634-0.03976-0.13419-0.06461-0.23358-0.02485 0.0994-0.06958 0.24849-0.03976 0.14413-0.07952 0.27831-0.03479 0.12922-0.05467 0.18388l-0.25346 0.825h0.92439z" dominant-baseline="central" stroke-width=".88748" aria-label="FÜRTER LIZA"/>
+    </svg>
+    <div class="head-text">
+      <h1>Laminar Stretch</h1>
+      <p class="subtitle">granular audio time-stretcher — runs in your browser</p>
+    </div>
+  </div>
+  <button class="theme-btn" id="themeBtn">[ light ]</button>
+</header>
+
+<!-- ─── Two-column layout ────────────────────────────────────────────────────── -->
+<div class="layout">
+<div class="main-col">
+
+  <div class="section">
+    <div class="section-label">input</div>
+    <div class="drop-zone" id="dropZone">
+      <p>drop audio file, or <span id="browseLink">select file</span></p>
+      <input type="file" id="fileInput" accept=".wav,audio/wav">
+    </div>
+    <div class="file-info" id="fileInfo"></div>
+    <audio id="inputPlayer" controls style="display:none;width:100%;margin-top:0.75rem;"></audio>
+  </div>
+
+  <div class="section">
+    <div class="section-label">stretch</div>
+    <div class="grid">
+      <div class="field">
+        <label>stretch % · 100 = 2× length</label>
+        <div class="range-row">
+          <input type="range" id="stretchRange" min="10" max="1600" step="10" value="800">
+          <input type="number" id="stretchNum" min="10" max="3200" step="10" value="800">
+        </div>
+      </div>
+      <div class="field">
+        <label>layers</label>
+        <div class="seg-row" id="numLayersRow">
+          <button class="seg-btn" data-value="1">1</button>
+          <button class="seg-btn" data-value="2">2</button>
+          <button class="seg-btn" data-value="3">3</button>
+          <button class="seg-btn active" data-value="4">4</button>
+        </div>
+        <input type="hidden" id="numLayers" value="4">
+      </div>
+      <div class="field">
+        <label>fade in/out (ms)</label>
+        <input type="number" id="fadeMs" min="0" max="500" step="5" value="30">
+      </div>
+      <div class="field">
+        <label>seed</label>
+        <input type="number" id="seed" placeholder="random">
+      </div>
+    </div>
+
+    <div style="margin-top:1rem;">
+      <div class="toggle-row">
+        <label class="toggle">
+          <input type="checkbox" id="autoGrain" checked>
+          <span class="toggle-slider"></span>
+        </label>
+        <label class="toggle-label" for="autoGrain">auto grain — scales grain size with stretch factor</label>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="toggle-row">
+        <label class="toggle">
+          <input type="checkbox" id="lfoEnabled">
+          <span class="toggle-slider"></span>
+        </label>
+        <label class="toggle-label" for="lfoEnabled">lfo</label>
+      </div>
+      <div class="sub-fields hidden" id="lfoFields">
+        <div id="lfoList"></div>
+        <button class="add-lfo-btn" id="addLfoBtn">+ add lfo</button>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="toggle-row">
+        <label class="toggle">
+          <input type="checkbox" id="chordEnabled">
+          <span class="toggle-slider"></span>
+        </label>
+        <label class="toggle-label" for="chordEnabled">chord</label>
+      </div>
+      <div class="sub-fields hidden" id="chordFields">
+        <div class="grid" style="margin-top:0.75rem;">
+          <div class="field">
+            <label>preset</label>
+            <div class="select-wrap">
+              <select id="chordPreset">
+                <option value="fifth">fifth [0, 7]</option>
+                <option value="octave">octave up [0, 12]</option>
+                <option value="octave_down">octave down [0, −12]</option>
+                <option value="minor">minor [0, 3, 7]</option>
+                <option value="major">major [0, 4, 7]</option>
+                <option value="cluster">cluster [0, 1, 5, 8]</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label>interval gain (non-root)</label>
+            <div class="range-row">
+              <input type="range" id="chordGainRange" min="0" max="1" step="0.01" value="0.4">
+              <input type="number" id="chordGainNum" min="0" max="1" step="0.01" value="0.4">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">post-processing</div>
+
+    <div class="toggle-row">
+      <label class="toggle">
+        <input type="checkbox" id="reverbEnabled">
+        <span class="toggle-slider"></span>
+      </label>
+      <label class="toggle-label" for="reverbEnabled">reverb</label>
+    </div>
+    <div class="sub-fields hidden" id="reverbFields">
+      <div class="grid" style="margin-bottom:0.75rem;">
+        <div class="field">
+          <label>room size (0–1, decay 0.5–8 s)</label>
+          <div class="range-row">
+            <input type="range" id="reverbRoom" min="0" max="1" step="0.01" value="0.65">
+            <input type="number" id="reverbRoomNum" min="0" max="1" step="0.01" value="0.65">
+          </div>
+        </div>
+        <div class="field">
+          <label>damping (0=bright 1=dark)</label>
+          <div class="range-row">
+            <input type="range" id="reverbDamp" min="0" max="0.99" step="0.01" value="0.35">
+            <input type="number" id="reverbDampNum" min="0" max="0.99" step="0.01" value="0.35">
+          </div>
+        </div>
+        <div class="field">
+          <label>wet level</label>
+          <div class="range-row">
+            <input type="range" id="reverbWet" min="0" max="1" step="0.01" value="0.25">
+            <input type="number" id="reverbWetNum" min="0" max="1" step="0.01" value="0.25">
+          </div>
+        </div>
+        <div class="field">
+          <label>stereo width</label>
+          <div class="range-row">
+            <input type="range" id="reverbWidth" min="0" max="1" step="0.01" value="0.80">
+            <input type="number" id="reverbWidthNum" min="0" max="1" step="0.01" value="0.80">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="toggle-row" style="margin-top:0.75rem;">
+      <label class="toggle">
+        <input type="checkbox" id="compressEnabled">
+        <span class="toggle-slider"></span>
+      </label>
+      <label class="toggle-label" for="compressEnabled">compressor</label>
+    </div>
+    <div class="sub-fields hidden" id="compressFields">
+      <div class="grid" style="margin-bottom:0.75rem;">
+        <div class="field">
+          <label>threshold (dBFS)</label>
+          <input type="number" id="compThreshold" min="-60" max="0" step="1" value="-20">
+        </div>
+        <div class="field">
+          <label>ratio</label>
+          <input type="number" id="compRatio" min="1" max="20" step="0.5" value="3">
+        </div>
+        <div class="field">
+          <label>makeup (dB)</label>
+          <input type="number" id="compMakeup" min="-12" max="24" step="0.5" value="3">
+        </div>
+        <div class="field">
+          <label>release (ms)</label>
+          <input type="number" id="compRelease" min="10" max="2000" step="10" value="200">
+        </div>
+      </div>
+    </div>
+
+    <div class="toggle-row" style="margin-top:0.75rem;">
+      <label class="toggle">
+        <input type="checkbox" id="toneEnabled">
+        <span class="toggle-slider"></span>
+      </label>
+      <label class="toggle-label" for="toneEnabled">tone correction</label>
+    </div>
+    <div class="sub-fields hidden" id="toneFields">
+      <div class="grid" style="margin-bottom:0.75rem;">
+        <div class="field">
+          <label>low shelf (hz)</label>
+          <input type="number" id="toneShelfHz" min="20" max="1000" step="10" value="220">
+        </div>
+        <div class="field">
+          <label>shelf boost (dB)</label>
+          <input type="number" id="toneShelfDb" min="-12" max="12" step="0.5" value="3.5">
+        </div>
+        <div class="field">
+          <label>high cut (hz)</label>
+          <input type="number" id="toneHighcut" min="1000" max="20000" step="100" value="7500">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <button class="process-btn" id="processBtn" disabled>process</button>
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+      <div class="progress-label" id="progressLabel">starting…</div>
+    </div>
+    <div class="error" id="errorBox"></div>
+  </div>
+
+</div><!-- /.main-col -->
+
+<div class="outputs-col">
+  <div class="outputs-panel">
+    <div class="panel-header">
+      outputs <span id="outputCount"></span>
+    </div>
+    <div class="panel-scroll" id="outputsList">
+      <div class="no-outputs" id="noOutputs">no outputs yet</div>
+    </div>
+  </div>
+
+  <aside class="about">
+    <p>laminar stretch slices audio into short overlapping grains and rebuilds it at a slower rate — time stretched, pitch unchanged. layering grains at different sizes and offsets is where the texture comes from.</p>
+    <p>if you make something with it, share it.</p>
+    <div class="about-links">
+      <a href="https://www.youtube.com/@FURTERLIZA" target="_blank" rel="noopener">youtube</a>
+      <a href="https://bsky.app/profile/furterliza.bsky.social" target="_blank" rel="noopener">bluesky</a>
+      <a href="https://github.com/FURTERLIZA/laminar-stretch" target="_blank" rel="noopener">github</a>
+    </div>
+    <button class="privacy-btn" id="privacyBtn" style="margin-top:0.75rem;">privacy</button>
+  </aside>
+</div>
+
+<div class="privacy-overlay" id="privacyOverlay">
+  <div class="privacy-modal" role="dialog" aria-modal="true" aria-labelledby="privacyTitle">
+    <button class="privacy-modal-close" id="privacyClose" aria-label="Close">×</button>
+    <h2 id="privacyTitle">privacy</h2>
+    <p>laminar stretch runs entirely in your browser. your audio is never uploaded — all processing happens locally on your device. no data is collected.</p>
+    <p>released under the <a href="https://github.com/FURTERLIZA/laminar-stretch/blob/main/LICENSE" target="_blank" rel="noopener" style="color:var(--color-accent)">MIT licence</a>. free to use, modify, and distribute.</p>
+    <p>© Fürter Liza · <a href="https://bsky.app/profile/furterliza.bsky.social" target="_blank" rel="noopener" style="color:var(--color-accent)">@furterliza.bsky.social</a></p>
+  </div>
+</div>
+
+</div><!-- /.layout -->
+
+<!-- ─── DSP Worker (loaded as inline blob) ─────────────────────────────── -->
+<script id="worker-src" type="text/plain">
+'use strict';
+
+// ── Seeded PRNG (xoshiro128+ seeded via splitmix32) ─────────────────────────
+
+class RNG {
+  constructor(seed) {
+    let s = (seed == null ? (Math.random() * 0x100000000) : seed) >>> 0;
+    const sm = () => {
+      s = (s + 0x9e3779b9) >>> 0;
+      let x = Math.imul(s ^ (s >>> 16), 0x85ebca6b) >>> 0;
+      x = Math.imul(x ^ (x >>> 13), 0xc2b2ae35) >>> 0;
+      return (x ^ (x >>> 16)) >>> 0;
+    };
+    this._s = [sm(), sm(), sm(), sm()];
+  }
+
+  _next() {
+    const s = this._s;
+    const r = (s[0] + s[3]) >>> 0;
+    const t = (s[1] << 9) >>> 0;
+    s[2] = (s[2] ^ s[0]) >>> 0;
+    s[3] = (s[3] ^ s[1]) >>> 0;
+    s[1] = (s[1] ^ s[2]) >>> 0;
+    s[0] = (s[0] ^ s[3]) >>> 0;
+    s[2] = (s[2] ^ t) >>> 0;
+    s[3] = ((s[3] << 11) | (s[3] >>> 21)) >>> 0;
+    return r / 4294967296;
+  }
+
+  // uniform [0, 1)
+  random() { return this._next(); }
+
+  // integer in [lo, hi] inclusive
+  integers(lo, hi) { return lo + Math.floor(this._next() * (hi - lo + 1)); }
+
+  // standard normal (Box-Muller)
+  normal() {
+    let u, v, s;
+    do { u = this._next() * 2 - 1; v = this._next() * 2 - 1; s = u*u + v*v; }
+    while (s >= 1 || s === 0);
+    return u * Math.sqrt(-2 * Math.log(s) / s);
+  }
+
+  normalArray(n) {
+    const a = new Float64Array(n);
+    for (let i = 0; i < n; i++) a[i] = this.normal();
+    return a;
+  }
+}
+
+// ── Signal utilities ─────────────────────────────────────────────────────────
+
+function hann(n) {
+  const w = new Float64Array(n);
+  for (let i = 0; i < n; i++) w[i] = 0.5 * (1 - Math.cos(2 * Math.PI * i / (n - 1)));
+  return w;
+}
+
+// Direct-form II transposed IIR filter (a[0] assumed 1)
+function lfilter(b, a, x) {
+  const n = x.length;
+  const M = Math.max(b.length, a.length);
+  const y = new Float64Array(n);
+  const z = new Float64Array(M);
+  for (let i = 0; i < n; i++) {
+    y[i] = b[0] * x[i] + z[0];
+    for (let k = 1; k < M; k++) {
+      const bk = k < b.length ? b[k] : 0;
+      const ak = k < a.length ? a[k] : 0;
+      z[k - 1] = bk * x[i] - ak * y[i] + (k < M - 1 ? z[k] : 0);
+    }
+  }
+  return y;
+}
+
+// Sliding-window mean with mirror padding (matches scipy uniform_filter1d mode='mirror')
+function uniformFilter1d(x, size) {
+  const n = x.length;
+  const half = Math.floor(size / 2);
+  const p = new Float64Array(n + 2 * half);
+  for (let i = 0; i < half; i++) p[i] = x[Math.min(half - 1 - i, n - 1)];
+  p.set(x, half);
+  for (let i = 0; i < half; i++) p[n + half + i] = x[Math.max(n - 1 - i, 0)];
+  const cs = new Float64Array(p.length + 1);
+  for (let i = 0; i < p.length; i++) cs[i + 1] = cs[i] + p[i];
+  const out = new Float64Array(n);
+  for (let i = 0; i < n; i++) out[i] = (cs[i + size] - cs[i]) / size;
+  return out;
+}
+
+// Sliding-window minimum with mirror padding (deque, O(n))
+function minimumFilter1d(x, size) {
+  const n = x.length;
+  const half = Math.floor(size / 2);
+  const p = new Float64Array(n + 2 * half);
+  for (let i = 0; i < half; i++) p[i] = x[Math.min(half - 1 - i, n - 1)];
+  p.set(x, half);
+  for (let i = 0; i < half; i++) p[n + half + i] = x[Math.max(n - 1 - i, 0)];
+  const m = p.length;
+  const out = new Float64Array(n);
+  const dq = new Int32Array(m);
+  let lo = 0, hi = 0;
+  for (let i = 0; i < m; i++) {
+    while (lo < hi && dq[lo] < i - size + 1) lo++;
+    while (lo < hi && p[dq[hi - 1]] >= p[i]) hi--;
+    dq[hi++] = i;
+    const j = i - size + 1;
+    if (j >= 0 && j < n) out[j] = p[dq[lo]];
+  }
+  return out;
+}
+
+// ── FFT / overlap-add convolution ─────────────────────────────────────────────
+
+function nextPow2(n) { return 1 << Math.ceil(Math.log2(Math.max(n, 1))); }
+
+// In-place Cooley-Tukey radix-2 DIT FFT
+function fftInPlace(re, im) {
+  const n = re.length;
+  // bit-reversal
+  let j = 0;
+  for (let i = 1; i < n; i++) {
+    let bit = n >> 1;
+    for (; j & bit; bit >>= 1) j ^= bit;
+    j ^= bit;
+    if (i < j) {
+      let t = re[i]; re[i] = re[j]; re[j] = t;
+      t = im[i]; im[i] = im[j]; im[j] = t;
+    }
+  }
+  // butterfly
+  for (let len = 2; len <= n; len <<= 1) {
+    const ang = -2 * Math.PI / len;
+    const wRe = Math.cos(ang), wIm = Math.sin(ang);
+    for (let i = 0; i < n; i += len) {
+      let uRe = 1, uIm = 0;
+      const half = len >> 1;
+      for (let k = 0; k < half; k++) {
+        const tRe = re[i+k+half]*uRe - im[i+k+half]*uIm;
+        const tIm = re[i+k+half]*uIm + im[i+k+half]*uRe;
+        re[i+k+half] = re[i+k] - tRe; im[i+k+half] = im[i+k] - tIm;
+        re[i+k] += tRe; im[i+k] += tIm;
+        const tmp = uRe*wRe - uIm*wIm; uIm = uRe*wIm + uIm*wRe; uRe = tmp;
+      }
+    }
+  }
+}
+
+function ifftInPlace(re, im) {
+  const n = re.length;
+  for (let i = 0; i < n; i++) im[i] = -im[i];
+  fftInPlace(re, im);
+  for (let i = 0; i < n; i++) { re[i] /= n; im[i] = -im[i] / n; }
+}
+
+// Overlap-add convolution (linear convolution, output length = len(x) + len(h) - 1)
+function oaconvolve(x, h) {
+  const nx = x.length, nh = h.length;
+  if (nx === 0 || nh === 0) return new Float64Array(Math.max(0, nx + nh - 1));
+  const fftSize = nextPow2(nh * 2);
+  const step = fftSize - nh + 1;
+  const outLen = nx + nh - 1;
+  // Pre-compute FFT of h
+  const hRe = new Float64Array(fftSize);
+  const hIm = new Float64Array(fftSize);
+  for (let i = 0; i < nh; i++) hRe[i] = h[i];
+  fftInPlace(hRe, hIm);
+  const out = new Float64Array(outLen + fftSize);
+  for (let start = 0; start < nx; start += step) {
+    const bLen = Math.min(step, nx - start);
+    const xRe = new Float64Array(fftSize);
+    const xIm = new Float64Array(fftSize);
+    for (let i = 0; i < bLen; i++) xRe[i] = x[start + i];
+    fftInPlace(xRe, xIm);
+    for (let i = 0; i < fftSize; i++) {
+      const r = xRe[i]*hRe[i] - xIm[i]*hIm[i];
+      xIm[i] = xRe[i]*hIm[i] + xIm[i]*hRe[i];
+      xRe[i] = r;
+    }
+    ifftInPlace(xRe, xIm);
+    for (let i = 0; i < fftSize && start + i < out.length; i++) out[start + i] += xRe[i];
+  }
+  return out.slice(0, outLen);
+}
+
+// ── Default layer configuration ───────────────────────────────────────────────
+
+function centsToRatio(cents) { return Math.pow(2, cents / 1200); }
+
+const DEFAULT_LAYERS = [
+  { stretch_modifier: 1.00, pitch_ratio: 1.0,                grain_ms: 180, overlap: 0.75, jitter_ms: 15, n_avg: 3, avg_spread: 0.40, gain: 1.00, phase_rand_ms: 5.0  },
+  { stretch_modifier: 0.85, pitch_ratio: centsToRatio(7),    grain_ms:  70, overlap: 0.82, jitter_ms: 28, n_avg: 2, avg_spread: 0.65, gain: 0.55, phase_rand_ms: 12.0 },
+  { stretch_modifier: 1.15, pitch_ratio: centsToRatio(-12),  grain_ms: 220, overlap: 0.70, jitter_ms: 10, n_avg: 4, avg_spread: 0.30, gain: 0.45, phase_rand_ms: 6.0  },
+  { stretch_modifier: 0.97, pitch_ratio: centsToRatio(3),    grain_ms:  35, overlap: 0.88, jitter_ms: 40, n_avg: 2, avg_spread: 0.80, gain: 0.25, phase_rand_ms: 15.0 },
+];
+
+const CHORD_PRESETS = {
+  fifth:        [0, 7],
+  octave:       [0, 12],
+  octave_down:  [0, -12],
+  minor:        [0, 3, 7],
+  major:        [0, 4, 7],
+  cluster:      [0, 1, 5, 8],
+};
+
+function chordLayerList(layers, chord) {
+  if (!chord || !chord.preset) return layers.map(layer => ({ layer, gainMult: 1.0 }));
+  const intervals = CHORD_PRESETS[chord.preset] || [0];
+  const result = [];
+  for (const interval of intervals) {
+    const pitchMult = Math.pow(2, interval / 12);
+    const gainMult  = interval === 0 ? 1.0 : chord.gain;
+    for (const layer of layers) {
+      result.push({ layer: { ...layer, pitch_ratio: layer.pitch_ratio * pitchMult }, gainMult });
+    }
+  }
+  return result;
+}
+
+// ── Grain engine ──────────────────────────────────────────────────────────────
+
+function blendGrain(src, center, grainSize, nAvg, avgSpread) {
+  const n = src.length;
+  center = Math.max(0, Math.min(Math.round(center), n - grainSize));
+  if (nAvg <= 1 || avgSpread === 0) {
+    const r = new Float64Array(grainSize);
+    for (let i = 0; i < grainSize; i++) r[i] = src[center + i];
+    return r;
+  }
+  const radius = Math.floor(grainSize * avgSpread);
+  const offsets = new Array(nAvg);
+  for (let i = 0; i < nAvg; i++) {
+    offsets[i] = nAvg > 1 ? Math.trunc(-radius + (2 * radius * i) / (nAvg - 1)) : 0;
+  }
+  // weights = hann(nAvg) + 0.1, normalised
+  const hw = hann(nAvg);
+  let wsum = 0;
+  for (let i = 0; i < nAvg; i++) { hw[i] += 0.1; wsum += hw[i]; }
+  for (let i = 0; i < nAvg; i++) hw[i] /= wsum;
+  const result = new Float64Array(grainSize);
+  for (let i = 0; i < nAvg; i++) {
+    const s = Math.max(0, Math.min(center + offsets[i], n - grainSize));
+    const w = hw[i];
+    for (let j = 0; j < grainSize; j++) result[j] += w * src[s + j];
+  }
+  return result;
+}
+
+function makeLfoSignal(lfo, nSamples, sampleRate, rng) {
+  const sig = new Float32Array(nSamples);
+  const { rate_hz, waveform } = lfo;
+  if (waveform === 'sine') {
+    for (let i = 0; i < nSamples; i++)
+      sig[i] = Math.sin(2 * Math.PI * rate_hz * i / sampleRate);
+  } else if (waveform === 'triangle') {
+    for (let i = 0; i < nSamples; i++) {
+      const phase = (rate_hz * i / sampleRate) % 1.0;
+      sig[i] = 1.0 - 4.0 * Math.abs(phase - 0.5);
+    }
+  } else if (waveform === 'random_walk') {
+    const noise = rng.normalArray(nSamples);
+    const alpha = Math.min(Math.max(2 * Math.PI * rate_hz / sampleRate, 1e-8), 1.0);
+    const filtered = lfilter([alpha], [1, -(1 - alpha)], noise);
+    let variance = 0;
+    for (let i = 0; i < nSamples; i++) variance += filtered[i] * filtered[i];
+    const std = Math.sqrt(variance / nSamples);
+    if (std > 1e-8)
+      for (let i = 0; i < nSamples; i++) sig[i] = Math.max(-1, Math.min(1, filtered[i] / (3 * std)));
+  }
+  return sig;
+}
+
+function stretchLayer(audio, sampleRate, layer, stretchFactor, autoGrain, lfos, rng, layerIdx, totalLayers) {
+  const effStretch = stretchFactor * layer.stretch_modifier;
+  const grainMs = autoGrain ? layer.grain_ms * Math.pow(stretchFactor, 0.2) : layer.grain_ms;
+  let grainSize = Math.max(64, Math.floor(sampleRate * grainMs / 1000));
+  if (grainSize % 2 !== 0) grainSize++;
+
+  const hopOut = Math.max(1, Math.floor(grainSize * (1 - layer.overlap)));
+  const hopIn  = hopOut * layer.pitch_ratio / effStretch;
+  const jitter = Math.max(0, Math.floor(sampleRate * layer.jitter_ms / 1000));
+
+  const nIn  = audio.length;
+  const nOut = Math.round(nIn * effStretch);
+
+  // Pre-compute LFO mod arrays
+  const grainMsMod  = new Float32Array(nOut);
+  const jitterMsMod = new Float32Array(nOut);
+  const gainMod     = new Float32Array(nOut);
+  let hasGrainLfo = false, hasJitterLfo = false, hasGainLfo = false;
+
+  for (const lfo of lfos) {
+    const sig = makeLfoSignal(lfo, nOut, sampleRate, rng);
+    if (lfo.target === 'grain_ms')  { for (let i = 0; i < nOut; i++) grainMsMod[i]  += lfo.depth * sig[i]; hasGrainLfo  = true; }
+    if (lfo.target === 'jitter_ms') { for (let i = 0; i < nOut; i++) jitterMsMod[i] += lfo.depth * sig[i]; hasJitterLfo = true; }
+    if (lfo.target === 'gain')      { for (let i = 0; i < nOut; i++) gainMod[i]      += lfo.depth * sig[i]; hasGainLfo   = true; }
+  }
+
+  // Max possible grain size accounting for LFO expansion
+  const maxExpansion = lfos.filter(l => l.target === 'grain_ms').reduce((s, l) => s + l.depth, 0);
+  const maxGs = Math.max(grainSize, Math.floor(sampleRate * grainMs * (1 + maxExpansion) / 1000) + 2);
+
+  const outBuf  = new Float32Array(nOut + maxGs * 2);
+  const normBuf = new Float32Array(nOut + maxGs * 2);
+
+  const winCache = new Map();
+  const getWin = (gs) => {
+    if (!winCache.has(gs)) winCache.set(gs, hann(gs));
+    return winCache.get(gs);
+  };
+
+  let inPos  = 0.0;
+  let outPos = 0;
+  let lastReport = Date.now();
+
+  while (outPos < nOut) {
+    // Per-grain effective grain size
+    let gs = grainSize;
+    if (hasGrainLfo) {
+      gs = Math.max(64, Math.floor(sampleRate * grainMs * Math.max(0.1, 1 + grainMsMod[outPos]) / 1000));
+      if (gs % 2 !== 0) gs++;
+    }
+    const winG = getWin(gs);
+
+    // Per-grain effective jitter
+    const jEff = hasJitterLfo
+      ? Math.max(0, Math.floor(sampleRate * layer.jitter_ms * Math.max(0, 1 + jitterMsMod[outPos]) / 1000))
+      : jitter;
+
+    let center = Math.round(inPos);
+    if (jEff > 0) center += rng.integers(-jEff, jEff);
+    if (layer.phase_rand_ms > 0) {
+      const pr = Math.floor(sampleRate * layer.phase_rand_ms / 1000);
+      center += rng.integers(-pr, pr);
+    }
+
+    const grain = blendGrain(audio, center, gs, layer.n_avg, layer.avg_spread);
+
+    const end = Math.min(outPos + gs, outBuf.length);
+    const gl  = end - outPos;
+    for (let i = 0; i < gl; i++) {
+      outBuf[outPos + i]  += grain[i] * winG[i];
+      normBuf[outPos + i] += winG[i];
+    }
+
+    inPos  += hopIn;
+    outPos += hopOut;
+
+    const now = Date.now();
+    if (now - lastReport >= 250) {
+      lastReport = now;
+      const pct = Math.min(99, Math.round(100 * outPos / nOut));
+      self.postMessage({ type: 'progress', pct, label: `Layer ${layerIdx + 1}/${totalLayers} — ${pct}%` });
+    }
+  }
+
+  const result = new Float32Array(nOut);
+  for (let i = 0; i < nOut; i++)
+    result[i] = normBuf[i] > 1e-8 ? outBuf[i] / normBuf[i] : 0;
+
+  // Gain LFO applied post-loop
+  if (hasGainLfo)
+    for (let i = 0; i < nOut; i++) result[i] *= 1 + gainMod[i];
+
+  return result;
+}
+
+// ── Fades ─────────────────────────────────────────────────────────────────────
+
+function applyFades(channels, sampleRate, fadeMs) {
+  const n = channels[0].length;
+  const fadeLen = Math.min(Math.floor(sampleRate * fadeMs / 1000), Math.floor(n / 4));
+  if (fadeLen < 2) return;
+  const ramp = new Float64Array(fadeLen);
+  for (let i = 0; i < fadeLen; i++) ramp[i] = (1 - Math.cos(Math.PI * i / (fadeLen - 1))) * 0.5;
+  for (const ch of channels) {
+    for (let i = 0; i < fadeLen; i++) { ch[i] *= ramp[i]; ch[n - 1 - i] *= ramp[i]; }
+  }
+}
+
+// ── Core stretch + mix ────────────────────────────────────────────────────────
+
+function processChannel(audio, sampleRate, params, rng, chIdx, nCh) {
+  const stretchFactor = 1 + params.stretch / 100;
+  const baseLayers = DEFAULT_LAYERS.slice(0, params.numLayers);
+  const entries = chordLayerList(baseLayers, params.chord);
+  const nTarget = Math.round(audio.length * stretchFactor);
+  const mixed = new Float32Array(nTarget);
+  const total = entries.length;
+
+  for (let li = 0; li < total; li++) {
+    const { layer, gainMult } = entries[li];
+    const label = nCh > 1 ? `Ch ${chIdx + 1}/${nCh}, ` : '';
+    self.postMessage({ type: 'progress', pct: 0, label: `${label}Layer ${li + 1}/${total}…` });
+
+    const stretched = stretchLayer(audio, sampleRate, layer, stretchFactor, params.autoGrain, params.lfos || [], rng, li, total);
+
+    const len = Math.min(stretched.length, nTarget);
+    for (let i = 0; i < len; i++) mixed[i] += stretched[i] * layer.gain * gainMult;
+    self.postMessage({ type: 'progress', pct: Math.round(100 * (li + 1) / total), label: `${label}Layer ${li + 1}/${total} done` });
+  }
+
+  return mixed;
+}
+
+// ── Reverb ────────────────────────────────────────────────────────────────────
+
+function makeReverbIR(sampleRate, p) {
+  const rng = new RNG(p.seed != null ? p.seed + 9999 : 1);
+  const decayS = 0.5 + Math.pow(p.room, 1.5) * 7.5;
+  const preS   = 0.012; // 12 ms pre-delay
+  const irLen  = Math.floor(sampleRate * (decayS + preS + 0.05));
+
+  const irL = new Float64Array(irLen);
+  const irR = new Float64Array(irLen);
+
+  // Early reflections
+  const erEnd = preS + 0.080;
+  const erTimes = Array.from({length: 14}, () => preS + rng.random() * (erEnd - preS)).sort((a, b) => a - b);
+  for (const t of erTimes) {
+    const idx = Math.floor(t * sampleRate);
+    if (idx >= irLen) continue;
+    const amp = Math.exp(-t * 6);
+    irL[idx] += amp * (1 + rng.normal() * 0.08);
+    irR[idx] += amp * (1 + rng.normal() * 0.08);
+  }
+
+  // Diffuse tail
+  const tailStart = Math.floor(sampleRate * (preS + 0.030));
+  const tailLen = irLen - tailStart;
+  if (tailLen > 0) {
+    const tau = decayS / Math.log(1000);
+    const envelope = new Float64Array(tailLen);
+    for (let i = 0; i < tailLen; i++) envelope[i] = Math.exp(-i / sampleRate / tau);
+
+    const common  = rng.normalArray(tailLen);
+    const uL      = rng.normalArray(tailLen);
+    const uR      = rng.normalArray(tailLen);
+
+    const w = p.width;
+    const a = Math.sqrt(Math.max(0, 1 - w * 0.5));
+    const b = Math.sqrt(w * 0.5);
+
+    let tL = new Float64Array(tailLen);
+    let tR = new Float64Array(tailLen);
+    for (let i = 0; i < tailLen; i++) { tL[i] = a*common[i] + b*uL[i]; tR[i] = a*common[i] + b*uR[i]; }
+
+    if (p.damping > 0) {
+      const d = p.damping * 0.92;
+      tL = lfilter([1 - d], [1, -d], tL);
+      tR = lfilter([1 - d], [1, -d], tR);
+    }
+
+    for (let i = 0; i < tailLen; i++) {
+      irL[tailStart + i] += envelope[i] * tL[i];
+      irR[tailStart + i] += envelope[i] * tR[i];
+    }
+  }
+
+  let peak = 1e-8;
+  for (let i = 0; i < irLen; i++) peak = Math.max(peak, Math.abs(irL[i]), Math.abs(irR[i]));
+  for (let i = 0; i < irLen; i++) { irL[i] /= peak; irR[i] /= peak; }
+
+  return { irL, irR };
+}
+
+function applyReverb(channels, sampleRate, p) {
+  self.postMessage({ type: 'progress', pct: 0, label: 'Reverb — building IR…' });
+  const { irL, irR } = makeReverbIR(sampleRate, p);
+
+  // Mono send
+  const nIn = channels[0].length;
+  const send = new Float64Array(nIn);
+  if (channels.length > 1) {
+    for (let i = 0; i < nIn; i++) send[i] = (channels[0][i] + channels[1][i]) * 0.5;
+  } else {
+    for (let i = 0; i < nIn; i++) send[i] = channels[0][i];
+  }
+
+  self.postMessage({ type: 'progress', pct: 10, label: 'Reverb — convolving L…' });
+  const wetL = oaconvolve(send, irL);
+  self.postMessage({ type: 'progress', pct: 55, label: 'Reverb — convolving R…' });
+  const wetR = oaconvolve(send, irR);
+
+  const outLen = wetL.length;
+  const dryL   = channels.length > 0 ? channels[0] : send;
+  const dryR   = channels.length > 1 ? channels[1] : (channels[0] || send);
+
+  const outL = new Float32Array(outLen);
+  const outR = new Float32Array(outLen);
+  for (let i = 0; i < outLen; i++) {
+    const dl = i < dryL.length ? dryL[i] : 0;
+    const dr = i < dryR.length ? dryR[i] : 0;
+    outL[i] = dl + p.wet * wetL[i];
+    outR[i] = dr + p.wet * wetR[i];
+  }
+  return [outL, outR];
+}
+
+// ── Compressor ────────────────────────────────────────────────────────────────
+
+function applyCompressor(channels, sampleRate, p) {
+  self.postMessage({ type: 'progress', pct: 0, label: 'Compressor…' });
+  const n = channels[0].length;
+
+  // Mono RMS
+  const mono = new Float64Array(n);
+  for (const ch of channels) for (let i = 0; i < n; i++) mono[i] += ch[i] / channels.length;
+
+  const winSamples = Math.max(3, Math.floor(0.100 * sampleRate));
+  const rms = new Float64Array(n);
+  const sq  = new Float64Array(n);
+  for (let i = 0; i < n; i++) sq[i] = mono[i] * mono[i];
+  const sqSmooth = uniformFilter1d(sq, winSamples);
+  for (let i = 0; i < n; i++) rms[i] = Math.sqrt(Math.max(0, sqSmooth[i]));
+
+  // Soft-knee static curve
+  const T = p.threshold, R = p.ratio, W = 6.0;
+  const gain_db = new Float64Array(n);
+  for (let i = 0; i < n; i++) {
+    const db = 20 * Math.log10(Math.max(rms[i], 1e-9));
+    const x  = db - T;
+    let out;
+    if (2 * x < -W)     out = db;
+    else if (2 * x > W) out = T + x / R;
+    else                 out = db + (1/R - 1) * Math.pow(x + W/2, 2) / (2 * W);
+    gain_db[i] = out - db;
+  }
+
+  // Attack (minimum filter)
+  const attackSamp = Math.max(3, Math.floor(0.030 * sampleRate));
+  const gdb2 = minimumFilter1d(gain_db, attackSamp * 2 + 1);
+
+  // Release (one-pole IIR)
+  const tau   = Math.max(1, p.release * sampleRate / 1000);
+  const alpha = 1 - Math.exp(-1 / tau);
+  const gdbR  = lfilter([alpha], [1, -(1 - alpha)], gdb2);
+
+  // Apply
+  const makeup = p.makeup;
+  const result = channels.map(ch => {
+    const out = new Float64Array(n);
+    for (let i = 0; i < n; i++) out[i] = ch[i] * Math.pow(10, (gdbR[i] + makeup) / 20);
+    return out;
+  });
+  return result;
+}
+
+// ── Tone correction ───────────────────────────────────────────────────────────
+
+function lowShelfCoeffs(sampleRate, shelfHz, gainDb) {
+  const A    = Math.pow(10, gainDb / 40);
+  const w0   = 2 * Math.PI * shelfHz / sampleRate;
+  const cosW = Math.cos(w0), sinW = Math.sin(w0);
+  const alpha = sinW / Math.SQRT2;
+  const sqA  = Math.sqrt(A);
+  const b0 = A*((A+1)-(A-1)*cosW+2*sqA*alpha);
+  const b1 = 2*A*((A-1)-(A+1)*cosW);
+  const b2 = A*((A+1)-(A-1)*cosW-2*sqA*alpha);
+  const a0 = (A+1)+(A-1)*cosW+2*sqA*alpha;
+  const a1 = -2*((A-1)+(A+1)*cosW);
+  const a2 = (A+1)+(A-1)*cosW-2*sqA*alpha;
+  return { b: [b0/a0, b1/a0, b2/a0], a: [1, a1/a0, a2/a0] };
+}
+
+function butterLP2Coeffs(sampleRate, cutHz) {
+  const wn    = Math.min(cutHz / (sampleRate / 2), 0.9999);
+  const omega = Math.tan(Math.PI * wn / 2);
+  const c     = omega * omega;
+  const a0    = 1 + Math.SQRT2 * omega + c;
+  return {
+    b: [c/a0, 2*c/a0, c/a0],
+    a: [1, 2*(c-1)/a0, (1-Math.SQRT2*omega+c)/a0]
+  };
+}
+
+function applyTone(channels, sampleRate, p) {
+  self.postMessage({ type: 'progress', pct: 0, label: 'Tone correction…' });
+  const shelf = lowShelfCoeffs(sampleRate, p.shelfHz, p.shelfDb);
+  const hicut = butterLP2Coeffs(sampleRate, p.highcutHz);
+  return channels.map(ch => {
+    const x = lfilter(shelf.b, shelf.a, ch);
+    return lfilter(hicut.b, hicut.a, x);
+  });
+}
+
+// ── Peak normalise ────────────────────────────────────────────────────────────
+
+function peakNorm(channels) {
+  let peak = 1e-8;
+  for (const ch of channels) for (let i = 0; i < ch.length; i++) peak = Math.max(peak, Math.abs(ch[i]));
+  for (const ch of channels) for (let i = 0; i < ch.length; i++) ch[i] /= peak;
+}
+
+// ── WAV encoder ───────────────────────────────────────────────────────────────
+
+function encodeWav(channels, sampleRate) {
+  const nCh = channels.length;
+  const nSamples = channels[0].length;
+  const dataSize = nSamples * nCh * 2;
+  const buf = new ArrayBuffer(44 + dataSize);
+  const v = new DataView(buf);
+  const ws = (off, s) => { for (let i = 0; i < s.length; i++) v.setUint8(off+i, s.charCodeAt(i)); };
+  ws(0, 'RIFF'); v.setUint32(4, 36+dataSize, true);
+  ws(8, 'WAVE'); ws(12, 'fmt '); v.setUint32(16, 16, true);
+  v.setUint16(20, 1, true); v.setUint16(22, nCh, true);
+  v.setUint32(24, sampleRate, true); v.setUint32(28, sampleRate*nCh*2, true);
+  v.setUint16(32, nCh*2, true); v.setUint16(34, 16, true);
+  ws(36, 'data'); v.setUint32(40, dataSize, true);
+  let off = 44;
+  for (let i = 0; i < nSamples; i++) {
+    for (let c = 0; c < nCh; c++) {
+      const s = Math.max(-1, Math.min(1, channels[c][i]));
+      v.setInt16(off, s < 0 ? s*32768 : s*32767, true);
+      off += 2;
+    }
+  }
+  return buf;
+}
+
+// ── Main message handler ──────────────────────────────────────────────────────
+
+self.onmessage = function(e) {
+  const { channels, sampleRate, params } = e.data;
+  try {
+    const rng = new RNG(params.seed != null ? params.seed : null);
+
+    // Check if stereo channels are identical → process once
+    let toProcess = channels;
+    let duplicate = false;
+    if (channels.length === 2) {
+      duplicate = channels[0].every((v, i) => v === channels[1][i]);
+      if (duplicate) toProcess = [channels[0]];
+    }
+
+    // Stage 1: granular stretch
+    self.postMessage({ type: 'stage', label: 'Granular stretch' });
+    const nCh = toProcess.length;
+    let result = toProcess.map((ch, ci) => {
+      const f64 = new Float64Array(ch);
+      return processChannel(f64, sampleRate, params, rng, ci, nCh);
+    });
+
+    if (duplicate) result = [result[0], result[0]];
+
+    // Fades + peak-norm
+    applyFades(result, sampleRate, params.fadeMs);
+    peakNorm(result);
+
+    // Stage 2: reverb
+    if (params.reverb.enabled) {
+      self.postMessage({ type: 'stage', label: 'Reverb' });
+      result = applyReverb(result, sampleRate, { ...params.reverb, seed: params.seed });
+      peakNorm(result);
+    }
+
+    // Stage 3: compressor
+    if (params.compress.enabled) {
+      self.postMessage({ type: 'stage', label: 'Compressor' });
+      result = applyCompressor(result, sampleRate, params.compress);
+    }
+
+    // Stage 4: tone
+    if (params.tone.enabled) {
+      self.postMessage({ type: 'stage', label: 'Tone' });
+      result = applyTone(result, sampleRate, params.tone);
+    }
+
+    // Final normalise
+    peakNorm(result);
+
+    // Encode
+    self.postMessage({ type: 'progress', pct: 99, label: 'Encoding WAV…' });
+    const wavBuffer = encodeWav(result, sampleRate);
+    const durationOut = result[0].length / sampleRate;
+    self.postMessage({ type: 'done', wavBuffer, durationOut }, [wavBuffer]);
+
+  } catch (err) {
+    self.postMessage({ type: 'error', message: err.message + '\n' + (err.stack || '') });
+  }
+};
+</script>
+
+<!-- ─── Main thread ─────────────────────────────────────────────────────────── -->
+<script>
+'use strict';
+
+// ── Theme toggle ──────────────────────────────────────────────────────────────
+const themeBtn = document.getElementById('themeBtn');
+
+function applyTheme(mode) {
+  if (mode === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+    themeBtn.textContent = '[ dark ]';
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+    themeBtn.textContent = '[ light ]';
+  }
+}
+
+applyTheme(localStorage.getItem('theme') || 'dark');
+
+themeBtn.addEventListener('click', () => {
+  const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+  localStorage.setItem('theme', next);
+  applyTheme(next);
+});
+
+// ── Layers segmented control ──────────────────────────────────────────────────
+const layersRow   = document.getElementById('numLayersRow');
+const layersInput = document.getElementById('numLayers');
+
+layersRow.querySelectorAll('.seg-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    layersRow.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    layersInput.value = btn.dataset.value;
+  });
+});
+
+// ── Sync range↔number pairs ──────────────────────────────────────────────────
+function linkRangeNum(rangeId, numId) {
+  const range = document.getElementById(rangeId);
+  const num   = document.getElementById(numId);
+  if (!range || !num) return;
+  range.addEventListener('input', () => { num.value = range.value; });
+  num.addEventListener('input', () => { range.value = num.value; });
+}
+linkRangeNum('stretchRange',   'stretchNum');
+linkRangeNum('chordGainRange', 'chordGainNum');
+linkRangeNum('reverbRoom',   'reverbRoomNum');
+linkRangeNum('reverbDamp',   'reverbDampNum');
+linkRangeNum('reverbWet',    'reverbWetNum');
+linkRangeNum('reverbWidth',  'reverbWidthNum');
+
+// ── Toggle sub-fields ─────────────────────────────────────────────────────────
+function bindToggle(checkId, fieldsId) {
+  const cb     = document.getElementById(checkId);
+  const fields = document.getElementById(fieldsId);
+  cb.addEventListener('change', () => fields.classList.toggle('hidden', !cb.checked));
+}
+bindToggle('reverbEnabled',   'reverbFields');
+bindToggle('compressEnabled', 'compressFields');
+bindToggle('toneEnabled',     'toneFields');
+bindToggle('lfoEnabled',      'lfoFields');
+bindToggle('chordEnabled',    'chordFields');
+
+// ── LFO add / remove ─────────────────────────────────────────────────────────
+const MAX_LFOS = 4;
+
+function updateAddLfoBtn() {
+  const btn = document.getElementById('addLfoBtn');
+  const count = document.querySelectorAll('.lfo-row').length;
+  btn.disabled = count >= MAX_LFOS;
+  btn.textContent = count >= MAX_LFOS ? `+ add lfo (max ${MAX_LFOS})` : '+ add lfo';
+}
+
+function addLfoRow() {
+  const list = document.getElementById('lfoList');
+  const row  = document.createElement('div');
+  row.className = 'lfo-row';
+  row.innerHTML = `
+    <div class="field">
+      <label>target</label>
+      <div class="select-wrap">
+        <select class="lfo-target">
+          <option value="grain_ms">grain size</option>
+          <option value="jitter_ms">jitter</option>
+          <option value="gain">gain</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>waveform</label>
+      <div class="select-wrap">
+        <select class="lfo-waveform">
+          <option value="sine">sine</option>
+          <option value="triangle">triangle</option>
+          <option value="random_walk">random walk</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>rate (hz)</label>
+      <input type="number" class="lfo-rate" value="0.08" min="0.001" max="10" step="0.01">
+    </div>
+    <div class="field">
+      <label>depth</label>
+      <input type="number" class="lfo-depth" value="0.3" min="0" max="1" step="0.05">
+    </div>
+    <button class="lfo-remove" title="Remove">×</button>`;
+  row.querySelector('.lfo-remove').addEventListener('click', () => {
+    row.remove();
+    updateAddLfoBtn();
+  });
+  list.appendChild(row);
+  updateAddLfoBtn();
+}
+
+document.getElementById('addLfoBtn').addEventListener('click', addLfoRow);
+
+// ── File handling ─────────────────────────────────────────────────────────────
+let audioBuffer = null;
+let inputObjectURL = null;
+const processBtn   = document.getElementById('processBtn');
+const dropZone     = document.getElementById('dropZone');
+const fileInput    = document.getElementById('fileInput');
+const fileInfo     = document.getElementById('fileInfo');
+const inputPlayer  = document.getElementById('inputPlayer');
+
+document.getElementById('browseLink').addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('click', e => { if (e.target.id !== 'browseLink') fileInput.click(); });
+
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault(); dropZone.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file) loadFile(file);
+});
+fileInput.addEventListener('change', () => {
+  if (fileInput.files[0]) loadFile(fileInput.files[0]);
+});
+
+function fmt(s) {
+  if (s < 60) return s.toFixed(1) + ' s';
+  return Math.floor(s/60) + ':' + String(Math.floor(s%60)).padStart(2,'0');
+}
+
+async function loadFile(file) {
+  audioBuffer = null;
+  processBtn.disabled = true;
+  fileInfo.className = 'file-info';
+  inputPlayer.style.display = 'none';
+  inputPlayer.src = '';
+  if (inputObjectURL) { URL.revokeObjectURL(inputObjectURL); inputObjectURL = null; }
+  showError('');
+
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const ctx = new AudioContext();
+    audioBuffer = await ctx.decodeAudioData(arrayBuffer);
+    const dur = audioBuffer.duration;
+    fileInfo.innerHTML =
+      `<span>${file.name}</span> &nbsp;· ` +
+      `${fmt(dur)} &nbsp;· ` +
+      `${audioBuffer.numberOfChannels === 1 ? 'mono' : 'stereo'} &nbsp;· ` +
+      `${audioBuffer.sampleRate} Hz`;
+    fileInfo.className = 'file-info visible';
+    inputObjectURL = URL.createObjectURL(file);
+    inputPlayer.src = inputObjectURL;
+    inputPlayer.style.display = 'block';
+    processBtn.disabled = false;
+  } catch (err) {
+    showError('could not decode audio: ' + err.message + '. only WAV files are supported.');
+  }
+}
+
+// ── Outputs panel ─────────────────────────────────────────────────────────────
+let outputTotal = 0;
+
+function appendOutput(blobUrl, durationOut, elapsed, sizeMb, params) {
+  outputTotal++;
+
+  const noEl = document.getElementById('noOutputs');
+  if (noEl) noEl.remove();
+
+  const updateCount = () => {
+    const n = document.querySelectorAll('.output-entry').length;
+    document.getElementById('outputCount').textContent = n > 0 ? `(${n})` : '';
+  };
+
+  const parts = [`${params.stretch}%`, `${params.numLayers}L`];
+  if (params.chord.preset)              parts.push(params.chord.preset);
+  if (params.lfos && params.lfos.length) parts.push(`${params.lfos.length}×lfo`);
+  if (params.reverb.enabled)            parts.push('reverb');
+  if (params.compress.enabled) parts.push('comp');
+  if (params.tone.enabled)     parts.push('tone');
+  const summary = parts.join(' · ');
+
+  const entry = document.createElement('div');
+  entry.className = 'output-entry';
+  entry.innerHTML = `
+    <div class="output-header">
+      <span class="output-num">#${outputTotal}</span>
+      <span class="output-params" title="${summary}">${summary}</span>
+      <button class="output-delete" title="remove">×</button>
+    </div>
+    <audio controls style="width:100%;display:block;"></audio>
+    <div class="output-footer">
+      <a class="output-dl" download="laminar_${outputTotal}.wav">download</a>
+      <span class="output-meta">${fmt(durationOut)} · ${sizeMb} MB · ${elapsed}s</span>
+    </div>`;
+
+  entry.querySelector('audio').src = blobUrl;
+  entry.querySelector('.output-dl').href = blobUrl;
+  entry.querySelector('.output-delete').addEventListener('click', () => {
+    URL.revokeObjectURL(blobUrl);
+    entry.remove();
+    updateCount();
+    if (!document.querySelector('.output-entry')) {
+      document.getElementById('outputsList').innerHTML =
+        '<div class="no-outputs" id="noOutputs">no outputs yet</div>';
+    }
+  });
+
+  document.getElementById('outputsList').prepend(entry);
+  updateCount();
+  entry.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ── Processing ────────────────────────────────────────────────────────────────
+const progressWrap  = document.getElementById('progressWrap');
+const progressFill  = document.getElementById('progressFill');
+const progressLabel = document.getElementById('progressLabel');
+const errorBox      = document.getElementById('errorBox');
+
+let worker = null;
+
+function showError(msg) {
+  errorBox.textContent = msg;
+  errorBox.className = msg ? 'error visible' : 'error';
+}
+
+function setProgress(pct, label) {
+  progressFill.style.width = pct + '%';
+  progressLabel.textContent = label;
+}
+
+processBtn.addEventListener('click', () => {
+  if (!audioBuffer) return;
+
+  if (worker) { worker.terminate(); worker = null; }
+
+  showError('');
+
+  // Pre-flight: estimate peak buffer size for a single layer (outBuf + normBuf)
+  const stretchEst = 1 + parseFloat(document.getElementById('stretchNum').value) / 100;
+  const nOutEst = Math.round(audioBuffer.length * stretchEst * 1.15); // 1.15 = max stretch_modifier
+  const peakMB = (2 * nOutEst * 4) / (1024 * 1024); // Float32, two buffers
+  if (peakMB > 1200) {
+    showError(`output too large to process in-browser (~${Math.round(peakMB)} MB per layer). try a shorter file or reduce stretch.`);
+    return;
+  }
+
+  progressWrap.className = 'progress-wrap visible';
+  setProgress(0, 'starting…');
+  processBtn.disabled = true;
+
+  const params = {
+    stretch:   parseFloat(document.getElementById('stretchNum').value),
+    numLayers: parseInt(document.getElementById('numLayers').value),
+    autoGrain: document.getElementById('autoGrain').checked,
+    fadeMs:    parseFloat(document.getElementById('fadeMs').value),
+    seed:      document.getElementById('seed').value.trim() !== ''
+                 ? parseInt(document.getElementById('seed').value)
+                 : null,
+    reverb: {
+      enabled: document.getElementById('reverbEnabled').checked,
+      room:    parseFloat(document.getElementById('reverbRoomNum').value),
+      damping: parseFloat(document.getElementById('reverbDampNum').value),
+      wet:     parseFloat(document.getElementById('reverbWetNum').value),
+      width:   parseFloat(document.getElementById('reverbWidthNum').value),
+    },
+    compress: {
+      enabled:   document.getElementById('compressEnabled').checked,
+      threshold: parseFloat(document.getElementById('compThreshold').value),
+      ratio:     parseFloat(document.getElementById('compRatio').value),
+      makeup:    parseFloat(document.getElementById('compMakeup').value),
+      release:   parseFloat(document.getElementById('compRelease').value),
+    },
+    tone: {
+      enabled:   document.getElementById('toneEnabled').checked,
+      shelfHz:   parseFloat(document.getElementById('toneShelfHz').value),
+      shelfDb:   parseFloat(document.getElementById('toneShelfDb').value),
+      highcutHz: parseFloat(document.getElementById('toneHighcut').value),
+    },
+    chord: {
+      preset: document.getElementById('chordEnabled').checked
+                ? document.getElementById('chordPreset').value
+                : '',
+      gain:   parseFloat(document.getElementById('chordGainNum').value),
+    },
+    lfos: document.getElementById('lfoEnabled').checked
+      ? Array.from(document.querySelectorAll('.lfo-row')).map(row => ({
+          target:   row.querySelector('.lfo-target').value,
+          waveform: row.querySelector('.lfo-waveform').value,
+          rate_hz:  parseFloat(row.querySelector('.lfo-rate').value),
+          depth:    parseFloat(row.querySelector('.lfo-depth').value),
+        }))
+      : [],
+  };
+
+  const nCh = audioBuffer.numberOfChannels;
+  const channels = [];
+  for (let c = 0; c < nCh; c++) channels.push(audioBuffer.getChannelData(c));
+
+  const workerCode = document.getElementById('worker-src').textContent;
+  const workerBlob = new Blob([workerCode], { type: 'application/javascript' });
+  const workerUrl  = URL.createObjectURL(workerBlob);
+  worker = new Worker(workerUrl);
+  URL.revokeObjectURL(workerUrl);
+
+  const startTime = Date.now();
+
+  worker.onmessage = (e) => {
+    const msg = e.data;
+    if (msg.type === 'progress') {
+      setProgress(msg.pct, msg.label);
+    } else if (msg.type === 'stage') {
+      setProgress(0, msg.label + '…');
+    } else if (msg.type === 'done') {
+      const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+      const sizeMb  = (msg.wavBuffer.byteLength / 1024 / 1024).toFixed(1);
+      const blobUrl = URL.createObjectURL(new Blob([msg.wavBuffer], { type: 'audio/wav' }));
+      appendOutput(blobUrl, msg.durationOut, elapsed, sizeMb, params);
+      setProgress(100, `done — ${fmt(msg.durationOut)} · added to outputs`);
+      processBtn.disabled = false;
+      worker = null;
+    } else if (msg.type === 'error') {
+      showError('processing error: ' + msg.message);
+      progressWrap.className = 'progress-wrap';
+      processBtn.disabled = false;
+      worker = null;
+    }
+  };
+
+  worker.onerror = (err) => {
+    showError('worker error: ' + err.message);
+    progressWrap.className = 'progress-wrap';
+    processBtn.disabled = false;
+    worker = null;
+  };
+
+  worker.postMessage({ channels, sampleRate: audioBuffer.sampleRate, params });
+});
+
+// ── Privacy modal ─────────────────────────────────────────────────────────────
+const privacyOverlay = document.getElementById('privacyOverlay');
+document.getElementById('privacyBtn').addEventListener('click', () => privacyOverlay.classList.add('open'));
+document.getElementById('privacyClose').addEventListener('click', () => privacyOverlay.classList.remove('open'));
+privacyOverlay.addEventListener('click', e => { if (e.target === privacyOverlay) privacyOverlay.classList.remove('open'); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') privacyOverlay.classList.remove('open'); });
+</script>
+</body>
+</html>
