@@ -1,23 +1,14 @@
 # laminar stretch
 
-granular time-stretching for ambient and drone production, written in Python. processes `.wav` files at extreme stretch ratios (200%–800%+).
-
-takes a source audio file and slows it down by an order of magnitude without pitch-shifting. unlike single-pass granular stretching (paulstretch-style), it runs several independent stretch passes in parallel, each with different grain sizes and subtle harmonic offsets. the results are folded together to create complex, evolving textures.
+granular time-stretching for ambient and drone production. processes `.wav` files at extreme stretch ratios (200%–800%+).
 
 **[watch a video example →](https://youtube.com/shorts/IwLQZZc8cWY?feature=share)**
 
-## features
+*(github pages link coming soon)*
 
-- multi-layer granular overlap-add engine (up to 4 independent layers)
-- per-layer grain size, stretch rate, pitch offset, jitter, and phase randomisation
-- LFO modulation of grain size, jitter, or gain (sine, triangle, random walk)
-- chord mode: duplicates the layer stack at harmonic intervals and mixes
-- procedural convolution reverb with stereo width control
-- soft-knee RMS compression with IIR release
-- tone correction: low-shelf boost and Butterworth high cut
-- `--warmth` preset for ambient material
-- YIN pitch detection with MIDI export and note merging
-- single-file Python script, no compiled dependencies
+---
+
+takes a source audio file and slows it down by an order of magnitude without pitch-shifting. unlike single-pass granular stretching (paulstretch-style), it runs several independent stretch passes in parallel — each with a different grain size, pitch offset, and rate — and mixes the results. the layers evolve at slightly different speeds and beat against each other, producing movement rather than a static smear.
 
 ## approach
 
@@ -33,9 +24,29 @@ the core technique is overlap-add granular synthesis. the source file is scanned
 
 see [algorithm.md](algorithm.md) for a step-by-step breakdown.
 
-this is a reference implementation in Python.
+## web implementation
 
-## requirements
+open [`laminar_stretch.html`](laminar_stretch.html) in any modern browser. load a WAV, set parameters, and process entirely client-side — no install, no server, no dependencies.
+
+### features
+
+- multi-layer granular overlap-add engine (up to 4 independent layers)
+- per-layer grain size, stretch rate, pitch offset, jitter, and phase randomisation
+- LFO modulation of grain size, jitter, or gain (sine, triangle, random walk)
+- chord mode: duplicates the layer stack at harmonic intervals (fifth, octave, minor, major, cluster)
+- procedural convolution reverb with stereo width control
+- soft-knee RMS compression with IIR release
+- tone correction: low-shelf boost and Butterworth high cut
+- save multiple outputs and compare them in-browser
+- processes in a background worker — UI stays responsive during long renders
+
+---
+
+## python implementation
+
+a reference implementation in Python. includes everything in the web version plus YIN pitch detection and MIDI export.
+
+### requirements
 
 ```
 numpy>=1.24
@@ -46,9 +57,7 @@ scipy>=1.10
 pip install -r requirements.txt
 ```
 
----
-
-## basic usage
+### basic usage
 
 ```
 python laminar_stretch.py input.wav output.wav --stretch 800
@@ -58,11 +67,9 @@ python laminar_stretch.py input.wav output.wav --stretch 200 --midi out.mid
 
 `--stretch 100` doubles the length. `--stretch 800` produces 9x the original duration.
 
----
+### command-line options
 
-## command-line options
-
-### stretch
+#### stretch
 
 | flag | default | description |
 |---|---|---|
@@ -77,7 +84,7 @@ python laminar_stretch.py input.wav output.wav --stretch 200 --midi out.mid
 | `--seed N` | | random seed. |
 | `--no-normalize` | off | skip peak normalisation. |
 
-### reverb
+#### reverb
 
 | flag | default | description |
 |---|---|---|
@@ -88,7 +95,7 @@ python laminar_stretch.py input.wav output.wav --stretch 200 --midi out.mid
 | `--reverb-width 0–1` | `0.80` | stereo spread of the reverb tail. |
 | `--reverb-predelay MS` | `12` | silence before the first reflection. |
 
-### compression
+#### compression
 
 | flag | default | description |
 |---|---|---|
@@ -98,7 +105,7 @@ python laminar_stretch.py input.wav output.wav --stretch 200 --midi out.mid
 | `--compress-makeup dB` | `3.0` | makeup gain added after compression. |
 | `--compress-release MS` | `200` | gain recovery time after a loud passage. |
 
-### tone correction
+#### tone correction
 
 applied after compression. low shelf followed by a Butterworth high cut.
 
@@ -109,7 +116,7 @@ applied after compression. low shelf followed by a Butterworth high cut.
 | `--tone-shelf-db dB` | `+3.5` | low-shelf boost in dB. |
 | `--tone-highcut-hz HZ` | `7500` | high-cut -3 dB point. |
 
-### chord mode
+#### chord mode
 
 copies the layer stack for each interval and mixes them together.
 
@@ -118,7 +125,7 @@ copies the layer stack for each interval and mixes them together.
 | `--chord PRESET` | | `fifth` [0,7], `octave` [0,12], `minor` [0,3,7], `major` [0,4,7], `cluster` [0,1,5,8]. |
 | `--chord-gain 0–1` | `0.4` | mix level for non-root intervals. |
 
-### LFO modulation
+#### LFO modulation
 
 modulates a layer parameter over time. repeat `--lfo` for multiple LFOs.
 
@@ -135,7 +142,7 @@ modulates a layer parameter over time. repeat `--lfo` for multiple LFOs.
 --lfo grain_ms:sine:0.08:0.3 --lfo gain:random_walk:0.05:0.2
 ```
 
-### pitch analysis and MIDI export
+#### pitch analysis and MIDI export
 
 analyses the output with the YIN algorithm and writes a type-0 MIDI file.
 
@@ -160,9 +167,7 @@ the default is 120 BPM, which is the default in most DAWs, so if you haven't cha
 | `--midi-frame MS` | `100` | analysis frame length. |
 | `--midi-hop MS` | `50` | hop between analysis frames. |
 
----
-
-## example
+### example
 
 ```
 python laminar_stretch.py voice.wav out.wav \
