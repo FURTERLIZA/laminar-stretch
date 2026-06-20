@@ -2,9 +2,14 @@
 
 granular time-stretching for ambient and drone production. processes `.wav` files at extreme stretch ratios (200%–800%+).
 
-**[watch a video example →](https://youtube.com/shorts/IwLQZZc8cWY?feature=share)**
 
-*(github pages link coming soon)*
+
+**[👉 try it in your browser](https://furterliza.github.io/laminar-stretch/)**
+
+
+**[▶️ watch a video example](https://youtube.com/shorts/IwLQZZc8cWY?feature=share)**
+
+
 
 ---
 
@@ -26,7 +31,7 @@ see [algorithm.md](algorithm.md) for a step-by-step breakdown.
 
 ## web implementation
 
-open [`laminar_stretch.html`](laminar_stretch.html) in any modern browser. load a WAV, set parameters, and process entirely client-side — no install, no server, no dependencies.
+open [`laminar_stretch.html`](laminar_stretch.html) in any modern browser. load a WAV, set parameters, and process entirely client-side — no install, no server, no dependencies. [or view it via github pages.](https://furterliza.github.io/laminar-stretch/)
 
 ### features
 
