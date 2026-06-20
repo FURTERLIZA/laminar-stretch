@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Laminar Stretch</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Laminar Stretch</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 67.703 42.194'%3E%3Cpath d='m67.69 12.05-14.76-12.05-37.95 0.08-14.98 11.9 33.46 30.2zm-32.7 11.44 1.37 8.87-2.2 5.98-0.36 0.39-2.44-6.84 1.44-8.36zm-11.55-0.01 1.03-0.07 1.27 0.1 1.82 4.21-0.09 0.12-3.45-3.55zm25.24 0.01-4.66 7.72-8.07 7.18 2.13-5.72 8.92-9.28zm-4.23 0-4.29 4.51 1.83-4.29 0.34-0.34zm-4.25 0-2.47 5.69-1.05-5.69 0.1-0.1zm-12.54-0.01 3.23-0.12 0.17 0.17-0.97 5.68-2.45-5.5zm-8.48 0 1.64-0.12 8.97 9.51 1.95 5.5-7.94-7.14zm25.64-10.53-0.83 2.08-8.62 0.14-0.33-1.46v-0.78l6.82-0.12zm19.8-0.15-16.06 14.25 2.15-3.56 1.71-0.13 1.13-1.09 0.41-4.09 3.22-5.27zm-18.73 2.21 0.89-2.21h7.86l-2.15 2.25-4.62 0.08zm-13.02-2.1-0.37 2.12-8.58 0.1-1.02-2.18 9.85-0.15zm-19.79-0.11 7.96 0.11 0.95 2.15-6.67 0.11zm-9.86 0 7.44 0.11 3.35 5.52 0.12 3.64 1.29 1.29 1.59 0.03 2.4 3.91zm41.97-5.47 0.12-0.14 7.63 3.86-6.06 0.02zm-22.64 0.02-1.58 3.72-6.04-0.02 0.02-0.1 7.44-3.76zm22.29 3.45-0.04 0.27-8.12-0.02 5.82-4.13 0.58-0.22zm-21.96 0.2 1.61-3.81 0.48-0.49 5.58 3.9 0.46 0.45zm34.5-5.28 6.97 5.33-6.75 0.02-0.27-3.83zm-46.95 0-0.12 4.22-0.29 1.13-6.41-0.02 1.1-0.98zm35.15-0.56 6.74-3.21 0.25 0.06 2.86 2.27 0.37 6.1-10.2-5.01zm-4.2 0.14-0.2 0.52-7.31 5.05-7.53-5.37 7.16-3.57 0.77 0.02zm-18.99 0.03-10.05 5.05h-0.32l0.37-6.18 2.98-2.27 1.59 0.63zm15.47-3.6h10.73l-5.07 2.55-0.58-0.08zm-18.75 0h10.75l-4.89 2.38-0.72 0.16z' fill='%23999' fill-rule='evenodd' opacity='.55'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1207,8 +1206,9 @@ function stretchLayer(audio, sampleRate, layer, stretchFactor, autoGrain, lfos, 
   const maxExpansion = lfos.filter(l => l.target === 'grain_ms').reduce((s, l) => s + l.depth, 0);
   const maxGs = Math.max(grainSize, Math.floor(sampleRate * grainMs * (1 + maxExpansion) / 1000) + 2);
 
-  const outBuf  = new Float32Array(nOut + maxGs * 2);
-  const normBuf = new Float32Array(nOut + maxGs * 2);
+  const outBuf = new Float32Array(nOut + maxGs * 2);
+  // normBuf eliminated: for fixed hopOut the Hann window sum is constant = grainSize/(2*hopOut).
+  // We apply that scalar at the end instead of tracking per-sample, saving ~500MB.
 
   const winCache = new Map();
   const getWin = (gs) => {
@@ -1246,8 +1246,7 @@ function stretchLayer(audio, sampleRate, layer, stretchFactor, autoGrain, lfos, 
     const end = Math.min(outPos + gs, outBuf.length);
     const gl  = end - outPos;
     for (let i = 0; i < gl; i++) {
-      outBuf[outPos + i]  += grain[i] * winG[i];
-      normBuf[outPos + i] += winG[i];
+      outBuf[outPos + i] += grain[i] * winG[i];
     }
 
     inPos  += hopIn;
@@ -1261,15 +1260,16 @@ function stretchLayer(audio, sampleRate, layer, stretchFactor, autoGrain, lfos, 
     }
   }
 
-  const result = new Float32Array(nOut);
-  for (let i = 0; i < nOut; i++)
-    result[i] = normBuf[i] > 1e-8 ? outBuf[i] / normBuf[i] : 0;
+  // Apply steady-state normalization: Hann OLA sum = grainSize / (2 * hopOut).
+  // Inverting: multiply by 2 * hopOut / grainSize.
+  const invNorm = (2 * hopOut) / grainSize;
+  for (let i = 0; i < nOut; i++) outBuf[i] *= invNorm;
 
   // Gain LFO applied post-loop
   if (hasGainLfo)
-    for (let i = 0; i < nOut; i++) result[i] *= 1 + gainMod[i];
+    for (let i = 0; i < nOut; i++) outBuf[i] *= 1 + gainMod[i];
 
-  return result;
+  return outBuf.subarray(0, nOut);
 }
 
 // ── Fades ─────────────────────────────────────────────────────────────────────
@@ -1300,10 +1300,11 @@ function processChannel(audio, sampleRate, params, rng, chIdx, nCh) {
     const label = nCh > 1 ? `Ch ${chIdx + 1}/${nCh}, ` : '';
     self.postMessage({ type: 'progress', pct: 0, label: `${label}Layer ${li + 1}/${total}…` });
 
-    const stretched = stretchLayer(audio, sampleRate, layer, stretchFactor, params.autoGrain, params.lfos || [], rng, li, total);
+    let stretched = stretchLayer(audio, sampleRate, layer, stretchFactor, params.autoGrain, params.lfos || [], rng, li, total);
 
     const len = Math.min(stretched.length, nTarget);
     for (let i = 0; i < len; i++) mixed[i] += stretched[i] * layer.gain * gainMult;
+    stretched = null; // release backing buffer before next layer allocates
     self.postMessage({ type: 'progress', pct: Math.round(100 * (li + 1) / total), label: `${label}Layer ${li + 1}/${total} done` });
   }
 
@@ -1502,8 +1503,25 @@ function peakNorm(channels) {
 // ── WAV encoder ───────────────────────────────────────────────────────────────
 
 function encodeWav(channels, sampleRate) {
+  // Convert Float32 channels to Int16 one at a time, freeing each Float32 before
+  // allocating the next, so we never hold both formats simultaneously.
+  // Peak memory: one Float32 channel + one Int16 channel + final WAV buffer,
+  // rather than all Float32 channels + WAV buffer at once.
   const nCh = channels.length;
   const nSamples = channels[0].length;
+
+  const int16 = [];
+  for (let c = 0; c < nCh; c++) {
+    const f32 = channels[c];
+    const i16 = new Int16Array(nSamples);
+    for (let i = 0; i < nSamples; i++) {
+      const s = Math.max(-1, Math.min(1, f32[i]));
+      i16[i] = s < 0 ? s * 32768 : s * 32767;
+    }
+    channels[c] = null; // release Float32 before converting next channel
+    int16.push(i16);
+  }
+
   const dataSize = nSamples * nCh * 2;
   const buf = new ArrayBuffer(44 + dataSize);
   const v = new DataView(buf);
@@ -1514,13 +1532,9 @@ function encodeWav(channels, sampleRate) {
   v.setUint32(24, sampleRate, true); v.setUint32(28, sampleRate*nCh*2, true);
   v.setUint16(32, nCh*2, true); v.setUint16(34, 16, true);
   ws(36, 'data'); v.setUint32(40, dataSize, true);
-  let off = 44;
+  const out = new Int16Array(buf, 44);
   for (let i = 0; i < nSamples; i++) {
-    for (let c = 0; c < nCh; c++) {
-      const s = Math.max(-1, Math.min(1, channels[c][i]));
-      v.setInt16(off, s < 0 ? s*32768 : s*32767, true);
-      off += 2;
-    }
+    for (let c = 0; c < nCh; c++) out[i * nCh + c] = int16[c][i];
   }
   return buf;
 }
@@ -1544,8 +1558,7 @@ self.onmessage = function(e) {
     self.postMessage({ type: 'stage', label: 'Granular stretch' });
     const nCh = toProcess.length;
     let result = toProcess.map((ch, ci) => {
-      const f64 = new Float64Array(ch);
-      return processChannel(f64, sampleRate, params, rng, ci, nCh);
+      return processChannel(ch, sampleRate, params, rng, ci, nCh);
     });
 
     if (duplicate) result = [result[0], result[0]];
@@ -1841,12 +1854,23 @@ processBtn.addEventListener('click', () => {
 
   showError('');
 
-  // Pre-flight: estimate peak buffer size for a single layer (outBuf + normBuf)
+  // Pre-flight: peak = outBuf (largest layer, Float32) + mixed (base stretch, Float32)
+  // + encode peak (two Int16 channels + WAV buffer, each half the Float32 size)
   const stretchEst = 1 + parseFloat(document.getElementById('stretchNum').value) / 100;
-  const nOutEst = Math.round(audioBuffer.length * stretchEst * 1.15); // 1.15 = max stretch_modifier
-  const peakMB = (2 * nOutEst * 4) / (1024 * 1024); // Float32, two buffers
-  if (peakMB > 1200) {
-    showError(`output too large to process in-browser (~${Math.round(peakMB)} MB per layer). try a shorter file or reduce stretch.`);
+  const nTarget  = Math.round(audioBuffer.length * stretchEst);
+  const nOutMax  = Math.round(nTarget * 1.15); // 1.15 = max stretch_modifier across layers
+  const nChEst    = audioBuffer.numberOfChannels;
+  // Processing peak: outBuf + mixed (per-channel, channels processed sequentially)
+  const processMB = (nOutMax + nTarget) * 4 / (1024 * 1024);
+  // Encoding peak: Int16 channels already converted + WAV buffer (all half size of Float32)
+  const encodeMB  = (nChEst * nTarget * 2 + nTarget * nChEst * 2) / (1024 * 1024);
+  const peakMB = Math.max(processMB, encodeMB);
+  const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent) ||
+                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const limitMB = isIOS ? 700 : 1400;
+  if (peakMB > limitMB) {
+    const advice = isIOS ? 'try a shorter file or lower stretch % on mobile.' : 'try a shorter file or reduce stretch.';
+    showError(`output too large to process in-browser (~${Math.round(peakMB)} MB). ${advice}`);
     return;
   }
 
