@@ -1591,8 +1591,8 @@ self.onmessage = function(e) {
 
     // Encode
     self.postMessage({ type: 'progress', pct: 99, label: 'Encoding WAV…' });
-    const wavBuffer = encodeWav(result, sampleRate);
     const durationOut = result[0].length / sampleRate;
+    const wavBuffer = encodeWav(result, sampleRate);
     self.postMessage({ type: 'done', wavBuffer, durationOut }, [wavBuffer]);
 
   } catch (err) {
