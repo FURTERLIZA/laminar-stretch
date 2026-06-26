@@ -666,6 +666,7 @@
     <div class="section-label">input</div>
     <div class="drop-zone" id="dropZone">
       <p>drop audio file, or <span id="browseLink">select file</span></p>
+      <p style="margin-top:0.4rem;font-size:0.72rem;">or <span id="exampleLink" style="color:var(--color-accent);text-decoration:underline;cursor:pointer;">use example</span></p>
       <input type="file" id="fileInput" accept=".wav,audio/wav">
     </div>
     <div class="file-info" id="fileInfo"></div>
@@ -1729,7 +1730,18 @@ const fileInfo     = document.getElementById('fileInfo');
 const inputPlayer  = document.getElementById('inputPlayer');
 
 document.getElementById('browseLink').addEventListener('click', () => fileInput.click());
-dropZone.addEventListener('click', e => { if (e.target.id !== 'browseLink') fileInput.click(); });
+document.getElementById('exampleLink').addEventListener('click', async (e) => {
+  e.stopPropagation();
+  try {
+    const resp = await fetch('example.wav');
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const blob = await resp.blob();
+    loadFile(new File([blob], 'example.wav', { type: 'audio/wav' }));
+  } catch (err) {
+    showError('could not load example: ' + err.message);
+  }
+});
+dropZone.addEventListener('click', e => { if (e.target.id !== 'browseLink' && e.target.id !== 'exampleLink') fileInput.click(); });
 
 dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
 dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
